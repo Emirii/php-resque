@@ -30,6 +30,11 @@ class Resque_Redis
 	const DEFAULT_DATABASE = 0;
 
 	/**
+	 * The default Redis Database number
+	 */
+	const DEFAULT_PASSWORD = null;
+
+	/**
 	 * @var array List of all commands in Redis that supply a key as their
 	 *	first argument. Used to prefix keys with the Resque namespace.
 	 */
@@ -110,7 +115,7 @@ class Resque_Redis
 	 *                      DSN-supplied value will be used instead and this parameter is ignored.
 	 * @param object $client Optional Credis_Cluster or Credis_Client instance instantiated by you
 	 */
-    public function __construct($server, $database = null, $client = null)
+    public function __construct($server, $database = null, $client = null, $password = null)
 	{
 		try {
 			if (is_array($server)) {
@@ -128,7 +133,7 @@ class Resque_Redis
 				$persistent = isset($options['persistent']) ? $options['persistent'] : '';
 				$maxRetries = isset($options['max_connect_retries']) ? $options['max_connect_retries'] : 0;
 
-				$this->driver = new Credis_Client($host, $port, $timeout, $persistent);
+				$this->driver = new Credis_Client($host, $port, $timeout, $persistent, $dsnDatabase, $password);
 				$this->driver->setMaxConnectRetries($maxRetries);
 				if ($password){
 					$this->driver->auth($password);
