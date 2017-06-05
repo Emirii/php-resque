@@ -117,6 +117,7 @@ class Resque_Redis
 	 */
     public function __construct($server, $database = null, $client = null, $password = null)
 	{
+
 		try {
 			if (is_array($server)) {
 				$this->driver = new Credis_Cluster($server);
@@ -125,7 +126,9 @@ class Resque_Redis
 				$this->driver = $client;
 			}
 			else {
-				list($host, $port, $dsnDatabase, $user, $password, $options) = self::parseDsn($server);
+				$origPassword = $password;
+				list($host, $port, $dsnDatabase, $password, $user, $options) = self::parseDsn($server);
+				$password = $origPassword;
 				// $user is not used, only $password
 
 				// Look for known Credis_Client options
@@ -135,7 +138,7 @@ class Resque_Redis
 
 				$this->driver = new Credis_Client($host, $port, $timeout, $persistent, $dsnDatabase, $password);
 				$this->driver->setMaxConnectRetries($maxRetries);
-				if ($password){
+				if ($password) {
 					$this->driver->auth($password);
 				}
 
